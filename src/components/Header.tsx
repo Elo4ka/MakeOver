@@ -32,7 +32,16 @@ const Header: React.FC<HeaderProps> = ({ user, activityPassed, dance }) => {
             onClick={() => navigate('/profile')}
             title="Профиль"
           >
-            <span className={`text-5xl ${dance ? 'avatar-dance' : (reacting ? 'avatar-react' : '')}`} style={{display: 'inline-block', transition: 'transform 0.3s cubic-bezier(0.4,2,0.6,1)'}}>{user.avatar}</span>
+            {user.avatar && user.avatar.startsWith('http') ? (
+              <img
+                src={user.avatar}
+                alt="avatar"
+                className={`w-12 h-12 rounded-full ${dance ? 'avatar-dance' : (reacting ? 'avatar-react' : '')}`}
+                style={{display: 'inline-block', transition: 'transform 0.3s cubic-bezier(0.4,2,0.6,1)'}}
+              />
+            ) : (
+              <span className={`text-5xl ${dance ? 'avatar-dance' : (reacting ? 'avatar-react' : '')}`} style={{display: 'inline-block', transition: 'transform 0.3s cubic-bezier(0.4,2,0.6,1)'}}>{user.avatar}</span>
+            )}
             <div>
               <p
                 className="text-lg font-extrabold text-white mb-0"
@@ -44,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({ user, activityPassed, dance }) => {
                   lineHeight: 1.1,
                 }}
               >
-                Привет, Георгий!
+                Привет, {user.name}!
               </p>
               <p
                 className="text-base font-bold mt-1"
@@ -55,7 +64,9 @@ const Header: React.FC<HeaderProps> = ({ user, activityPassed, dance }) => {
                   letterSpacing: '0.5px',
                 }}
               >
-                Уровень {user.level} • {user.points} ⭐
+                {user.name !== "Гость"
+                  ? `Уровень ${user.level} • ${user.points} ⭐`
+                  : 'Уровень: —'}
               </p>
             </div>
           </div>

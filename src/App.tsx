@@ -15,8 +15,8 @@ import { getQuizzesByTopic } from './data/quizzes';
 import { getRandomExercise, getExerciseById } from './data/interactiveExercises';
 import Auth from './components/Auth';
 import { saveProgress } from './firebaseHelpers';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from './firebase';
+import { onAuthStateChanged, signInWithPopup } from 'firebase/auth';
+import { auth, provider } from './firebase';
 
 const initialUser: User = {
   id: '1',
@@ -67,13 +67,32 @@ const App: React.FC = () => {
 
   // Listen for auth state
   useEffect(() => {
-    try {
-      const unsub = onAuthStateChanged(auth, setFirebaseUser);
-      return () => unsub();
-    } catch (error) {
-      console.warn('Firebase auth not available:', error);
-      setFirebaseUser(null);
-    }
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setFirebaseUser(user);
+      if (user) {
+        setGameState((prev) => ({
+          ...prev,
+          user: {
+            ...prev.user,
+            name: user.displayName || user.email || "Пользователь",
+            email: user.email || undefined,
+            avatar: user.photoURL || prev.user.avatar,
+          },
+        }));
+      } else {
+        // User signed out: set to guest/default user
+        setGameState((prev) => ({
+          ...prev,
+          user: {
+            ...initialUser,
+            name: "Гость",
+            email: undefined,
+            avatar: "👤",
+          },
+        }));
+      }
+    });
+    return () => unsub();
   }, []);
 
   // Save progress to Firestore
@@ -249,6 +268,16 @@ const App: React.FC = () => {
         onBack={onBack}
       />
     );
+  };
+
+  const handleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, provider);
+      // handle success (e.g., redirect, update state)
+    } catch (error) {
+      // handle error (e.g., show message)
+      console.error(error);
+    }
   };
 
   return (

@@ -1,10 +1,11 @@
 import { db } from './firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from './firebase';
 
 export async function saveProgress(userId: string, progress: any) {
   try {
-    // Check if we have a real Firebase db or mock
-    if (db && typeof db.collection === 'function') {
+    if (db) {
       await setDoc(doc(db, 'progress', userId), progress);
     } else {
       // Mock implementation - save to localStorage instead
@@ -20,8 +21,7 @@ export async function saveProgress(userId: string, progress: any) {
 
 export async function loadProgress(userId: string) {
   try {
-    // Check if we have a real Firebase db or mock
-    if (db && typeof db.collection === 'function') {
+    if (db) {
       const docSnap = await getDoc(doc(db, 'progress', userId));
       return docSnap.exists() ? docSnap.data() : null;
     } else {
@@ -35,4 +35,16 @@ export async function loadProgress(userId: string) {
     const savedProgress = localStorage.getItem(`progress_${userId}`);
     return savedProgress ? JSON.parse(savedProgress) : null;
   }
+}
+
+// Avatar helpers
+export async function updateUserAvatar(userId: string, avatar: string) {
+  await setDoc(doc(db, 'users', userId), { avatar }, { merge: true });
+}
+
+export async function uploadAvatarImage(file: File, userId: string): Promise<string> {
+  const avatarRef = ref(storage, `avatars/${userId}/${file.name}`);
+  await uploadBytes(avatarRef, file);
+  const url = await getDownloadURL(avatarRef);
+  return url;
 } 

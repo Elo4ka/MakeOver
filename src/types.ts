@@ -8,6 +8,7 @@ export interface User {
   achievements: Achievement[];
   completedLessons: string[];
   avatar: string;
+  email?: string;
 }
 
 export interface Lesson {

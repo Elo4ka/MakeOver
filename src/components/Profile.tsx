@@ -1,93 +1,308 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { User } from '../types';
 import { useNavigate } from 'react-router-dom';
+import { uploadAvatarImage, updateUserAvatar } from '../firebaseHelpers';
 
 interface ProfileProps {
   user: User;
 }
 
+const emojiOptions = ["🦫", "🐻", "🦊", "🐱", "🐶", "🦄", "🐸", "🐧", "🐼", "👾", "👤"];
+
 const Profile: React.FC<ProfileProps> = ({ user }: ProfileProps) => {
   const navigate = useNavigate();
+  const [uploading, setUploading] = useState(false);
+  const [avatar, setAvatar] = useState(user.avatar);
+  const [saved, setSaved] = useState(false);
+  const [pendingAvatar, setPendingAvatar] = useState<string | null>(null);
+
+  // Handler for emoji selection
+  const handleEmojiSelect = async (emoji: string) => {
+    await updateUserAvatar(user.id, emoji);
+    setAvatar(emoji);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1000);
+  };
+
+  // Handler for image upload
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadAvatarImage(file, user.id);
+      setPendingAvatar(url);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-lg p-8 relative">
+    <div
+      className="flex justify-center items-center min-h-screen"
+      style={{
+        background: "radial-gradient(circle at 60% 40%, #1e293b 60%, #0f172a 100%)",
+        minHeight: "100vh",
+        padding: "2rem 0",
+      }}
+    >
+      <div
+        className="relative rounded-3xl shadow-2xl p-10"
+        style={{
+          background: "linear-gradient(135deg, #232526 0%, #414345 100%)",
+          border: "4px solid #38bdf8",
+          boxShadow: "0 0 40px #38bdf8, 0 8px 32px #000a",
+          maxWidth: 700,
+          width: "100%",
+          color: "#fff",
+          fontFamily: "'Press Start 2P', 'Fredoka One', 'Montserrat', Arial, sans-serif",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
         {/* Close Button */}
         <button
           onClick={() => navigate(-1)}
-          className="absolute top-4 right-4 bg-gray-200 hover:bg-red-500 hover:text-white text-gray-700 rounded-full p-2 shadow transition-all duration-200"
+          style={{
+            position: "absolute",
+            top: 24,
+            right: 24,
+            background: "#0ea5e9",
+            color: "#fff",
+            fontWeight: "bold",
+            border: "2px solid #f87171",
+            borderRadius: "50%",
+            width: 44,
+            height: 44,
+            boxShadow: "0 0 8px #f87171, 0 0 2px #fff",
+            fontSize: "1.5rem",
+            cursor: "pointer",
+            transition: "background 0.2s, color 0.2s"
+          }}
           title="Закрыть профиль"
         >
-          <span className="text-xl font-bold">✕</span>
+          ✕
         </button>
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Profile</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* User Info */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4">User Information</h2>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <span className="text-4xl">{user.avatar}</span>
-                <div>
-                  <p className="text-lg font-medium">{user.name}</p>
-                  <p className="text-gray-500">Student</p>
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Level</p>
-                    <p className="text-lg font-semibold">{user.level}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Experience</p>
-                    <p className="text-lg font-semibold">{user.experience} XP</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Points</p>
-                    <p className="text-lg font-semibold">{user.points} ⭐</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Streak</p>
-                    <p className="text-lg font-semibold">{user.streak} days</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <h1
+          style={{
+            fontFamily: "'Press Start 2P', 'Fredoka One', 'Montserrat', Arial, sans-serif",
+            fontSize: "2.2rem",
+            color: "#38bdf8",
+            textShadow: "0 2px 12px #38bdf8, 0 1px 8px #2228",
+            marginBottom: "2rem"
+          }}
+        >
+          Profile
+        </h1>
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginBottom: "1.5rem"
+        }}>
+          {(pendingAvatar || avatar) && (pendingAvatar || avatar).startsWith("http") ? (
+            <img
+              src={pendingAvatar || avatar}
+              alt="avatar"
+              style={{
+                width: "70px",
+                height: "70px",
+                borderRadius: "50%",
+                objectFit: "cover",
+                boxShadow: "0 0 24px #38bdf8, 0 0 8px #fff",
+                animation: "bounce 1.2s infinite alternate"
+              }}
+            />
+          ) : (
+            <span style={{
+              fontSize: "3.5rem",
+              textShadow: "0 0 24px #38bdf8, 0 0 8px #fff",
+              animation: "bounce 1.2s infinite alternate"
+            }}>{pendingAvatar || avatar}</span>
+          )}
+        </div>
+        {user.name !== "Гость" && (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(7, 48px)",
+              gap: "1rem",
+              justifyContent: "center",
+              margin: "1rem 0",
+              width: "max-content"
+            }}
+          >
+            {emojiOptions.map((emoji) => (
+              <button
+                key={emoji}
+                onClick={() => handleEmojiSelect(emoji)}
+                style={{
+                  fontSize: "2rem",
+                  background: avatar === emoji ? "#38bdf8" : "#232526",
+                  border: avatar === emoji ? "2px solid #fff" : "2px solid #38bdf8",
+                  borderRadius: "50%",
+                  boxShadow: avatar === emoji ? "0 0 16px #38bdf8" : "0 0 8px #38bdf8",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  width: "60px",
+                  height: "60px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+                title={emoji}
+                disabled={uploading}
+              >
+                {emoji}
+              </button>
+            ))}
+            <label
+              style={{
+                cursor: "pointer",
+                fontSize: "2rem",
+                background: avatar && avatar.startsWith("http") ? "#38bdf8" : "#232526",
+                border: avatar && avatar.startsWith("http") ? "2px solid #fff" : "2px solid #38bdf8",
+                borderRadius: "50%",
+                boxShadow: avatar && avatar.startsWith("http") ? "0 0 16px #38bdf8" : "0 0 8px #38bdf8",
+                padding: "0.2rem 0.5rem",
+                width: "60px",
+                height: "60px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              title="Upload image"
+            >
+              📷
+              <input
+                type="file"
+                accept="image/*"
+                style={{ display: "none" }}
+                onChange={handleImageChange}
+                disabled={uploading}
+              />
+            </label>
+            {uploading && (
+              <span
+                style={{
+                  color: "#38bdf8",
+                  marginLeft: "0.5rem",
+                  gridColumn: "span 7",
+                  textAlign: "center"
+                }}
+              >
+                Uploading...
+              </span>
+            )}
           </div>
-
-          {/* Statistics */}
+        )}
+        <div style={{
+          background: "rgba(56, 189, 248, 0.15)",
+          borderRadius: "1rem",
+          padding: "1.5rem",
+          margin: "1rem 0",
+          boxShadow: "0 0 16px #38bdf8",
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gap: "1.5rem",
+          fontFamily: "'Press Start 2P', 'Fredoka One', 'Montserrat', Arial, sans-serif",
+          fontSize: "1.1rem"
+        }}>
           <div>
-            <h2 className="text-xl font-semibold mb-4">Statistics</h2>
-            <div className="space-y-4">
-              <div className="bg-blue-50 rounded-lg p-4">
-                <p className="text-sm text-blue-600 font-medium">Lessons Completed</p>
-                <p className="text-2xl font-bold text-blue-700">{user.completedLessons.length}</p>
-              </div>
-              
-              <div className="bg-green-50 rounded-lg p-4">
-                <p className="text-sm text-green-600 font-medium">Achievements</p>
-                <p className="text-2xl font-bold text-green-700">{user.achievements.length}</p>
-              </div>
-            </div>
+            <div style={{ color: "#38bdf8", fontWeight: "bold" }}>Level</div>
+            <div style={{ color: "#fff", fontSize: "1.5rem" }}>{user.level}</div>
+          </div>
+          <div>
+            <div style={{ color: "#38bdf8", fontWeight: "bold" }}>Experience</div>
+            <div style={{ color: "#fff", fontSize: "1.5rem" }}>{user.experience} XP</div>
+          </div>
+          <div>
+            <div style={{ color: "#38bdf8", fontWeight: "bold" }}>Points</div>
+            <div style={{ color: "#fff", fontSize: "1.5rem" }}>{user.points} ⭐</div>
+          </div>
+          <div>
+            <div style={{ color: "#38bdf8", fontWeight: "bold" }}>Streak</div>
+            <div style={{ color: "#fff", fontSize: "1.5rem" }}>{user.streak} days</div>
           </div>
         </div>
-
-        {/* Achievements */}
+        <div style={{
+          display: "flex",
+          gap: "1.5rem",
+          margin: "1.5rem 0",
+          justifyContent: "center"
+        }}>
+          <div
+            style={{
+              background: "rgba(56, 189, 248, 0.15)",
+              borderRadius: "1rem",
+              padding: "1.5rem",
+              boxShadow: "0 0 16px #38bdf8",
+              color: "#38bdf8",
+              fontFamily: "'Press Start 2P', 'Fredoka One', 'Montserrat', Arial, sans-serif",
+              fontSize: "1.1rem",
+              flex: 1
+            }}
+          >
+            <div style={{ fontWeight: "bold" }}>Lessons Completed</div>
+            <div style={{ color: "#fff", fontSize: "1.5rem" }}>{user.completedLessons.length}</div>
+          </div>
+          <div
+            style={{
+              background: "rgba(34, 197, 94, 0.15)",
+              borderRadius: "1rem",
+              padding: "1.5rem",
+              boxShadow: "0 0 16px #22c55e",
+              color: "#22c55e",
+              fontFamily: "'Press Start 2P', 'Fredoka One', 'Montserrat', Arial, sans-serif",
+              fontSize: "1.1rem",
+              flex: 1
+            }}
+          >
+            <div style={{ fontWeight: "bold" }}>Achievements</div>
+            <div style={{ color: "#fff", fontSize: "1.5rem" }}>{user.achievements.length}</div>
+          </div>
+        </div>
         {user.achievements.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Achievements</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div style={{ marginTop: "2rem" }}>
+            <h2
+              style={{
+                fontFamily: "'Press Start 2P', 'Fredoka One', 'Montserrat', Arial, sans-serif",
+                color: "#ffe066",
+                textShadow: "0 2px 8px #ffe066, 0 1px 4px #2228",
+                fontSize: "1.2rem",
+                marginBottom: "1rem"
+              }}
+            >
+              Achievements
+            </h2>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                gap: "1.5rem"
+              }}
+            >
               {user.achievements.map((achievement) => (
-                <div key={achievement.id} className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-2xl">{achievement.icon}</span>
-                    <div>
-                      <p className="font-medium text-gray-900">{achievement.name}</p>
-                      <p className="text-sm text-gray-600">{achievement.description}</p>
-                      <p className="text-xs text-yellow-600 font-medium">+{achievement.points} points</p>
-                    </div>
+                <div
+                  key={achievement.id}
+                  style={{
+                    background: "rgba(255, 224, 102, 0.15)",
+                    border: "2px solid #ffe066",
+                    borderRadius: "1rem",
+                    padding: "1rem",
+                    boxShadow: "0 0 12px #ffe066",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1rem"
+                  }}
+                >
+                  <span style={{ fontSize: "2rem", textShadow: "0 0 8px #ffe066" }}>
+                    {achievement.icon}
+                  </span>
+                  <div>
+                    <div style={{ color: "#fff", fontWeight: "bold" }}>{achievement.name}</div>
+                    <div style={{ color: "#ffe066", fontSize: "0.9rem" }}>{achievement.description}</div>
+                    <div style={{ color: "#fff", fontSize: "0.8rem" }}>+{achievement.points} points</div>
                   </div>
                 </div>
               ))}

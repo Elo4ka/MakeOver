@@ -13,7 +13,7 @@ const Auth: React.FC<{ user: any }> = ({ user }) => {
   };
 
   return user ? (
-    <button onClick={handleSignOut}>Выйти ({user.displayName})</button>
+    <button onClick={handleSignOut}>Выйти</button>
   ) : (
     <button onClick={handleSignIn}>Войти через Google</button>
   );
