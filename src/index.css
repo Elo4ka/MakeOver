@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-robloxWhite text-robloxBlack font-blocky;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-roblox shadow-roblox p-6 border-2 border-robloxGray;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary-600 hover:bg-secondary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+  
+  .btn-success {
+    @apply bg-success-600 hover:bg-success-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 active:scale-95;
+  }
+  
+  .progress-bar {
+    @apply w-full bg-gray-200 rounded-full h-3 overflow-hidden;
+  }
+  
+  .progress-fill {
+    @apply h-full bg-gradient-to-r from-primary-500 to-secondary-500 transition-all duration-500 ease-out;
+  }
+}
+
+button, .roblox-btn {
+  @apply bg-robloxRed text-white font-blocky rounded-roblox px-6 py-3 shadow-roblox text-lg font-bold transition-all duration-150;
+}
+button:hover, .roblox-btn:hover {
+  @apply bg-robloxBlack text-robloxRed scale-105;
+}
+button:active, .roblox-btn:active {
+  @apply bg-robloxGray text-white scale-95;
+}
+
+input, select, textarea {
+  @apply rounded-roblox border-2 border-robloxGray px-4 py-2 font-blocky;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  background: #F2F2F2;
+}
+::-webkit-scrollbar-thumb {
+  background: #393B3D;
+  border-radius: 0.75rem;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-7deg) scale(1.05); }
+  20% { transform: rotate(7deg) scale(1.1); }
+  40% { transform: rotate(-7deg) scale(1.05); }
+  60% { transform: rotate(7deg) scale(1.1); }
+  80% { transform: rotate(-7deg) scale(1.05); }
+}
+.animate-wiggle {
+  animation: wiggle 1.5s infinite ease-in-out;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+.animate-shake {
+  animation: shake 0.4s;
+} 

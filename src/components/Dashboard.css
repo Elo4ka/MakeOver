@@ -1,0 +1,55 @@
+@keyframes mission-glow {
+  0% {
+    box-shadow: 0 0 16px 4px #38bdf8aa, 0 2px 16px #6366f155;
+  }
+  50% {
+    box-shadow: 0 0 32px 8px #6366f1cc, 0 2px 32px #38bdf8aa;
+  }
+  100% {
+    box-shadow: 0 0 16px 4px #38bdf8aa, 0 2px 16px #6366f155;
+  }
+}
+
+.mission-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.mission-btn-glow {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 0;
+  animation: mission-glow 2s infinite ease-in-out;
+}
+
+.avatar-react {
+  animation: avatar-dance 1.2s cubic-bezier(0.4,2,0.6,1);
+}
+
+.avatar-dance {
+  animation: avatar-dance 1.2s cubic-bezier(0.4,2,0.6,1);
+}
+
+@keyframes avatar-dance {
+  0% { transform: scale(1) rotate(0deg); }
+  10% { transform: scale(1.1) rotate(-10deg); }
+  20% { transform: scale(1.1) rotate(10deg); }
+  30% { transform: scale(1.1) rotate(-10deg); }
+  40% { transform: scale(1.1) rotate(10deg); }
+  50% { transform: scale(1.2) rotate(0deg) translateY(-10px); }
+  60% { transform: scale(1.1) rotate(-10deg); }
+  70% { transform: scale(1.1) rotate(10deg); }
+  80% { transform: scale(1.1) rotate(-10deg); }
+  90% { transform: scale(1.1) rotate(10deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes avatar-pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.5); }
+  60% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+} 
