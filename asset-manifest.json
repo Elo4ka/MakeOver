@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/MakeOver/static/css/main.d413b950.css",
-    "main.js": "/MakeOver/static/js/main.36090dd7.js",
+    "main.js": "/MakeOver/static/js/main.af806eb2.js",
     "index.html": "/MakeOver/index.html",
     "main.d413b950.css.map": "/MakeOver/static/css/main.d413b950.css.map",
-    "main.36090dd7.js.map": "/MakeOver/static/js/main.36090dd7.js.map"
+    "main.af806eb2.js.map": "/MakeOver/static/js/main.af806eb2.js.map"
   },
   "entrypoints": [
     "static/css/main.d413b950.css",
-    "static/js/main.36090dd7.js"
+    "static/js/main.af806eb2.js"
   ]
 }
