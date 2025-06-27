@@ -22,7 +22,7 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
       <div className="relative z-20 flex flex-col items-center justify-center min-h-screen">
         <div className="text-center mb-8 mt-10">
           <h1
-            className="text-6xl md:text-7xl font-extrabold mb-4 tracking-tight"
+            className="text-3xl sm:text-4xl md:text-6xl md:text-7xl font-extrabold mb-4 tracking-tight"
             style={{
               color: '#111',
               fontFamily: 'Luckiest Guy, Fredoka One, Montserrat, Comic Sans MS, Arial, sans-serif',
@@ -32,20 +32,20 @@ const Dashboard: React.FC<{ user: User }> = ({ user }) => {
           >
             One platform.<br />Millions of ways to engage.
           </h1>
-          <p className="text-base md:text-lg text-white font-normal drop-shadow mb-8 mt-10" style={{fontFamily: 'Rubik Mono One, Montserrat, Arial, sans-serif', textShadow: '0 1px 6px #2228'}}>
+          <p className="text-sm sm:text-base md:text-lg text-white font-normal drop-shadow mb-8 mt-6 sm:mt-10" style={{fontFamily: 'Rubik Mono One, Montserrat, Arial, sans-serif', textShadow: '0 1px 6px #2228'}}>
             Добро пожаловать, {user.name || 'Гость'}! 🎓<br/>Готов к новым знаниям? Выбери предмет для изучения
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 w-full max-w-6xl px-2 sm:px-0 mb-10 sm:mb-20">
           {subjects.map((subject) => (
             <div
               key={subject.id}
               onClick={() => navigate(`/subject/${subject.id}`)}
-              className="relative group bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 rounded-xl shadow-2xl p-6 cursor-pointer border-2 border-yellow-400 hover:border-blue-400 transition-all duration-300 hover:shadow-blue-400 text-center transform hover:-translate-y-2 hover:scale-105 lootbox-card"
+              className="relative group bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-500 rounded-xl shadow-2xl p-4 sm:p-6 cursor-pointer border-2 border-yellow-400 hover:border-blue-400 transition-all duration-300 hover:shadow-blue-400 text-center transform hover:-translate-y-2 hover:scale-105 lootbox-card w-full max-w-xs mx-auto"
               style={{
                 backdropFilter: 'blur(2px)',
                 boxShadow: '0 0 48px 8px #38bdf8cc, 0 0 40px 10px #38bdf8',
-                minHeight: '180px',
+                minHeight: '160px',
                 maxHeight: '234px',
                 position: 'relative',
                 overflow: 'visible',

@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { User } from '../types';
 import { useNavigate } from 'react-router-dom';
+import Auth from './Auth';
 
 interface HeaderProps {
   user: User;
   activityPassed: boolean;
   dance?: boolean;
+  firebaseUser?: any;
+  onBeforeSignOut?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ user, activityPassed, dance }) => {
+const Header: React.FC<HeaderProps> = ({ user, activityPassed, dance, firebaseUser, onBeforeSignOut }) => {
   const navigate = useNavigate();
   const [reacting, setReacting] = useState(false);
 
@@ -23,7 +26,7 @@ const Header: React.FC<HeaderProps> = ({ user, activityPassed, dance }) => {
   return (
     <header className="bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center py-4 gap-2 sm:gap-0">
           <div className="flex items-center">
             <h1 
               className="text-2xl font-bold text-white cursor-pointer hover:text-blue-400 transition-colors duration-200"
@@ -40,7 +43,7 @@ const Header: React.FC<HeaderProps> = ({ user, activityPassed, dance }) => {
               GeoLum
             </h1>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
             {/* Shop Icon */}
             <span
               className="text-4xl cursor-pointer hover:scale-110 transition-transform duration-200"
@@ -96,6 +99,10 @@ const Header: React.FC<HeaderProps> = ({ user, activityPassed, dance }) => {
                     : 'Уровень: —'}
                 </p>
               </div>
+            </div>
+            {/* Auth Button */}
+            <div className="w-full sm:w-auto flex justify-end">
+              <Auth user={firebaseUser} onBeforeSignOut={onBeforeSignOut} />
             </div>
           </div>
         </div>

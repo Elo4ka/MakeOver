@@ -24,24 +24,9 @@ const Auth: React.FC<{ user: any; onBeforeSignOut?: () => void }> = ({ user, onB
   return user ? (
     <button
       onClick={handleSignOut}
+      className="bg-red-500 hover:bg-red-700 text-white border-2 border-white rounded-xl font-bold text-base sm:text-lg px-4 py-2 shadow-md transition-all duration-200 ml-0 sm:ml-4 mt-2 sm:mt-0 w-full sm:w-auto"
       style={{
-        background: '#ef4444',
-        color: '#fff',
-        border: '2px solid #fff',
-        borderRadius: '12px',
-        fontWeight: 700,
-        fontSize: '1.1rem',
-        padding: '0.5rem 1.5rem',
         boxShadow: '0 0 8px #ef4444',
-        cursor: 'pointer',
-        transition: 'background 0.2s, color 0.2s',
-        marginLeft: '1rem',
-      }}
-      onMouseOver={e => {
-        e.currentTarget.style.background = '#b91c1c';
-      }}
-      onMouseOut={e => {
-        e.currentTarget.style.background = '#ef4444';
       }}
     >
       Выйти
@@ -49,23 +34,9 @@ const Auth: React.FC<{ user: any; onBeforeSignOut?: () => void }> = ({ user, onB
   ) : (
     <button
       onClick={handleSignIn}
+      className="bg-red-500 hover:bg-red-700 text-white border-2 border-white rounded-xl font-bold text-base sm:text-lg px-4 py-2 shadow-md transition-all duration-200 w-full sm:w-auto"
       style={{
-        background: '#ef4444',
-        color: '#fff',
-        border: '2px solid #fff',
-        borderRadius: '12px',
-        fontWeight: 700,
-        fontSize: '1.1rem',
-        padding: '0.5rem 1.5rem',
         boxShadow: '0 0 8px #ef4444',
-        cursor: 'pointer',
-        transition: 'background 0.2s, color 0.2s',
-      }}
-      onMouseOver={e => {
-        e.currentTarget.style.background = '#b91c1c';
-      }}
-      onMouseOut={e => {
-        e.currentTarget.style.background = '#ef4444';
       }}
     >
       Войти через Google

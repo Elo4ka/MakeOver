@@ -344,12 +344,9 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="absolute top-4 right-4 z-50">
-        <Auth user={firebaseUser} onBeforeSignOut={() => {
-          localStorage.setItem('gameState_guest', JSON.stringify(gameState));
-        }} />
-      </div>
-      <Header user={gameState.user} activityPassed={activityPassed} dance={showDance} />
+      <Header user={gameState.user} activityPassed={activityPassed} dance={showDance} firebaseUser={firebaseUser} onBeforeSignOut={() => {
+        localStorage.setItem('gameState_guest', JSON.stringify(gameState));
+      }} />
       <div className="pt-0">
       <AnimatePresence mode="wait">
         <Routes>
