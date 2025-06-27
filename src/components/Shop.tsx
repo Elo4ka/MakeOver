@@ -37,9 +37,9 @@ const Shop: React.FC<ShopProps> = ({ userPoints, userXP, onBuy }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-200 to-yellow-100">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-200 to-yellow-100 px-2 sm:px-0">
       <h1
-        className="text-6xl font-extrabold mb-8 animate-bounce"
+        className="text-3xl sm:text-4xl md:text-6xl font-extrabold mb-8 animate-bounce text-center"
         style={{
           fontFamily: "'Luckiest Guy', 'Rubik Mono One', 'Press Start 2P', 'Fredoka One', 'Montserrat', 'Comic Sans MS', Arial, sans-serif",
           color: '#00eaff',
@@ -58,19 +58,19 @@ const Shop: React.FC<ShopProps> = ({ userPoints, userXP, onBuy }) => {
       </div>
       
       {/* Regular Items Section */}
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold mb-6 text-center" style={{ 
+      <div className="mb-8 w-full">
+        <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center" style={{ 
           fontFamily: "'Luckiest Guy', 'Rubik Mono One', 'Fredoka One', 'Montserrat', Arial, sans-serif",
           color: '#2563eb',
           textShadow: '0 2px 8px #ffe066'
         }}>
           Обычные товары
         </h2>
-        <div className="flex flex-wrap gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-6 justify-center items-center w-full">
           {shopItems.filter(item => typeof item.price === 'number' && !item.xpPrice).map(item => {
             const price = item.price!; // Non-null assertion since we filtered for it
             return (
-            <div key={item.id} className="rounded-2xl shadow-xl p-5 flex flex-col items-center w-64 border-4 border-yellow-300 relative" style={{ 
+            <div key={item.id} className="rounded-2xl shadow-xl p-4 sm:p-5 flex flex-col items-center w-full max-w-xs border-4 border-yellow-300 relative mx-auto" style={{ 
               background: 'linear-gradient(135deg, #38bdf8 0%, #ffe066 100%)',
               boxShadow: '0 0 24px 4px #38bdf8aa, 0 2px 16px #6366f155, 0 0 32px 8px #fffde4',
               border: '4px solid #ffe066',
@@ -120,11 +120,11 @@ const Shop: React.FC<ShopProps> = ({ userPoints, userXP, onBuy }) => {
         }}>
           XP-Эксклюзив
         </h2>
-        <div className="flex flex-wrap gap-6 justify-center">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-6 justify-center items-center w-full">
           {shopItems.filter(item => typeof item.xpPrice === 'number').map(item => {
             const xpPrice = item.xpPrice!; // Non-null assertion since we filtered for it
             return (
-            <div key={item.id} className="rounded-2xl shadow-xl p-5 flex flex-col items-center w-64 border-4 border-purple-400 relative" style={{ 
+            <div key={item.id} className="rounded-2xl shadow-xl p-4 sm:p-5 flex flex-col items-center w-full max-w-xs border-4 border-purple-400 relative mx-auto" style={{ 
               background: 'linear-gradient(135deg, #c084fc 0%, #b4d2f7 100%)',
               boxShadow: '0 0 24px 4px #a21cafaa, 0 2px 16px #6366f155, 0 0 32px 8px #f3e8ff',
               border: '4px solid #c084fc',

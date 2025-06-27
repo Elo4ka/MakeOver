@@ -77,8 +77,8 @@ const LessonView: React.FC<LessonViewProps> = ({ lesson, onComplete, onBack }: L
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-2 sm:px-0">
+      <div className="max-w-4xl mx-auto px-2 sm:px-4 py-8">
         {/* Header */}
         <div className="mb-6">
           <button 

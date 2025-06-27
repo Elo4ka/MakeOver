@@ -67,7 +67,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onAvatarChange, onMarkItemUsed 
 
   return (
     <div
-      className="flex justify-center items-center min-h-screen"
+      className="flex justify-center items-center min-h-screen px-2 sm:px-0"
       style={{
         background: "radial-gradient(circle at 60% 40%, #1e293b 60%, #0f172a 100%)",
         minHeight: "100vh",
@@ -75,21 +75,18 @@ const Profile: React.FC<ProfileProps> = ({ user, onAvatarChange, onMarkItemUsed 
       }}
     >
       <div
-        className="relative rounded-3xl shadow-2xl p-6"
+        className="relative rounded-3xl shadow-2xl p-3 sm:p-6 w-full max-w-xs sm:max-w-lg md:max-w-xl lg:max-w-2xl"
         style={{
           background: "linear-gradient(135deg, #232526 0%, #3a3f5a 100%)",
           border: "4px solid #38bdf8",
           boxShadow: "0 0 40px #38bdf8, 0 8px 32px #000a",
-          maxWidth: 700,
           width: "100%",
           color: "#fff",
           fontFamily: "'Press Start 2P', 'Fredoka One', 'Montserrat', Arial, sans-serif",
           position: "relative",
           overflow: "hidden",
           maxHeight: "96vh",
-          overflowY: "auto",
-          paddingLeft: "2rem",
-          paddingRight: "2rem"
+          overflowY: "auto"
         }}
       >
         {/* Close Button */}
@@ -166,145 +163,141 @@ const Profile: React.FC<ProfileProps> = ({ user, onAvatarChange, onMarkItemUsed 
           </div>
         </div>
         {user.name !== "Гость" && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100%",
-              margin: "1.2rem 0",
-              paddingLeft: "1.5rem",
-              paddingRight: "1.5rem"
-            }}
-          >
-            <div style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              gap: "0.7rem",
-              width: "100%",
-              boxSizing: "border-box"
-            }}>
-              {emojiOptions.map((emoji) => (
-                <button
-                  key={emoji}
-                  onClick={() => setSelectedAvatar(emoji)}
+          <>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                margin: "1.2rem 0",
+                paddingLeft: "1.5rem",
+                paddingRight: "1.5rem"
+              }}
+            >
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-4" style={{
+                background: "rgba(56, 189, 248, 0.15)",
+                borderRadius: "1rem",
+                padding: "0.5rem",
+                margin: "0.5rem 0",
+                boxShadow: "0 0 16px #38bdf8",
+                fontFamily: "'Press Start 2P', 'Fredoka One', 'Montserrat', Arial, sans-serif",
+                fontSize: "1.05rem",
+                marginBottom: '1.5rem'
+              }}>
+                {emojiOptions.map((emoji) => (
+                  <button
+                    key={emoji}
+                    onClick={() => setSelectedAvatar(emoji)}
+                    className="text-2xl sm:text-3xl md:text-4xl w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full border-2 border-blue-400 bg-gray-800 hover:bg-blue-400 transition-all"
+                    style={{
+                      fontSize: "1.7rem",
+                      background: avatar === emoji ? "#38bdf8" : "#232526",
+                      border: avatar === emoji ? "2px solid #fff" : "2px solid #38bdf8",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      transition: "all 0.2s",
+                      outline: selectedAvatar === emoji ? '2px solid #fff' : undefined,
+                      boxShadow: selectedAvatar === emoji ? '0 0 16px #38bdf8, 0 0 8px #fff' : (avatar === emoji ? '0 0 16px #38bdf8' : '0 0 8px #38bdf8')
+                    }}
+                    title={emoji}
+                    disabled={uploading}
+                  >
+                    {emoji}
+                  </button>
+                ))}
+                <label
                   style={{
-                    fontSize: "1.7rem",
-                    background: avatar === emoji ? "#38bdf8" : "#232526",
-                    border: avatar === emoji ? "2px solid #fff" : "2px solid #38bdf8",
-                    borderRadius: "50%",
                     cursor: "pointer",
-                    transition: "all 0.2s",
+                    fontSize: "1.7rem",
+                    background: avatar && avatar.startsWith("http") ? "#38bdf8" : "#232526",
+                    border: avatar && avatar.startsWith("http") ? "2px solid #fff" : "2px solid #38bdf8",
+                    borderRadius: "50%",
+                    padding: "0.1rem 0.2rem",
                     width: "48px",
                     height: "48px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    outline: selectedAvatar === emoji ? '2px solid #fff' : undefined,
-                    boxShadow: selectedAvatar === emoji ? '0 0 16px #38bdf8, 0 0 8px #fff' : (avatar === emoji ? '0 0 16px #38bdf8' : '0 0 8px #38bdf8')
+                    outline: selectedAvatar && selectedAvatar.startsWith('http') ? '2px solid #fff' : undefined,
+                    boxShadow: selectedAvatar && selectedAvatar.startsWith('http') ? '0 0 16px #38bdf8, 0 0 8px #fff' : (avatar && avatar.startsWith('http') ? '0 0 16px #38bdf8' : '0 0 8px #38bdf8')
                   }}
-                  title={emoji}
-                  disabled={uploading}
+                  title="Upload image"
                 >
-                  {emoji}
-                </button>
-              ))}
-              <label
-                style={{
-                  cursor: "pointer",
-                  fontSize: "1.7rem",
-                  background: avatar && avatar.startsWith("http") ? "#38bdf8" : "#232526",
-                  border: avatar && avatar.startsWith("http") ? "2px solid #fff" : "2px solid #38bdf8",
-                  borderRadius: "50%",
-                  padding: "0.1rem 0.2rem",
-                  width: "48px",
-                  height: "48px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  outline: selectedAvatar && selectedAvatar.startsWith('http') ? '2px solid #fff' : undefined,
-                  boxShadow: selectedAvatar && selectedAvatar.startsWith('http') ? '0 0 16px #38bdf8, 0 0 8px #fff' : (avatar && avatar.startsWith('http') ? '0 0 16px #38bdf8' : '0 0 8px #38bdf8')
-                }}
-                title="Upload image"
-              >
-                📷
-                <input
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={handleImageChange}
-                  disabled={uploading}
-                />
-              </label>
+                  📷
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleImageChange}
+                    disabled={uploading}
+                  />
+                </label>
+              </div>
+              {uploading && (
+                <span
+                  style={{
+                    color: "#38bdf8",
+                    marginLeft: "1rem",
+                    alignSelf: "center"
+                  }}
+                >
+                  Uploading...
+                </span>
+              )}
             </div>
-            {uploading && (
-              <span
+            {/* Confirm button below the grid */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '0.5rem', marginBottom: '1rem' }}>
+              <button
+                onClick={handleConfirmAvatar}
+                disabled={uploading || !selectedAvatar || selectedAvatar === avatar}
                 style={{
-                  color: "#38bdf8",
-                  marginLeft: "1rem",
-                  alignSelf: "center"
+                  background: uploading || !selectedAvatar || selectedAvatar === avatar ? '#888' : '#38bdf8',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '999px',
+                  padding: '0.3rem 1.5rem',
+                  fontWeight: 700,
+                  fontSize: '1.1rem',
+                  boxShadow: '0 0 8px #38bdf8',
+                  cursor: uploading || !selectedAvatar || selectedAvatar === avatar ? 'not-allowed' : 'pointer',
+                  transition: 'background 0.2s, color 0.2s',
+                  marginTop: 0
                 }}
               >
-                Uploading...
-              </span>
-            )}
-          </div>
+                {uploading ? 'Saving...' : 'Confirm'}
+              </button>
+            </div>
+          </>
         )}
-        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '1rem', marginBottom: '1.5rem' }}>
-          <button
-            onClick={handleConfirmAvatar}
-            disabled={uploading || !selectedAvatar || selectedAvatar === avatar}
-            style={{
-              background: uploading || !selectedAvatar || selectedAvatar === avatar ? '#888' : '#38bdf8',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '999px',
-              padding: '0.3rem 1.5rem',
-              fontWeight: 700,
-              fontSize: '1.1rem',
-              boxShadow: '0 0 8px #38bdf8',
-              cursor: uploading || !selectedAvatar || selectedAvatar === avatar ? 'not-allowed' : 'pointer',
-              transition: 'background 0.2s, color 0.2s',
-              marginTop: 0
-            }}
-          >
-            {uploading ? 'Saving...' : 'Confirm'}
-          </button>
-        </div>
-        <div style={{
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm" style={{
           background: "rgba(56, 189, 248, 0.15)",
           borderRadius: "1rem",
           padding: "0.5rem",
           margin: "0.5rem 0",
           boxShadow: "0 0 16px #38bdf8",
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          gap: "1.2rem",
           fontFamily: "'Press Start 2P', 'Fredoka One', 'Montserrat', Arial, sans-serif",
-          fontSize: "1.05rem",
+          fontSize: "0.9rem",
           marginBottom: '1.5rem'
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '1rem', paddingRight: '1rem' }}>
-            <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "0.9rem" }}>Level</span>
-            <span style={{ color: "#fff", fontSize: "1.05rem" }}>{user.level}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.5rem', paddingRight: '0.5rem' }}>
+            <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "0.8rem" }}>Level</span>
+            <span style={{ color: "#fff", fontSize: "0.95rem" }}>{user.level}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '1rem', paddingRight: '1rem' }}>
-            <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "0.9rem" }}>Experience</span>
-            <span style={{ color: "#fff", fontSize: "1.05rem" }}>{user.experience} XP</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.5rem', paddingRight: '0.5rem' }}>
+            <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "0.8rem" }}>Experience</span>
+            <span style={{ color: "#fff", fontSize: "0.95rem" }}>{user.experience} XP</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '1rem', paddingRight: '1rem' }}>
-            <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "0.9rem" }}>Points</span>
-            <span style={{ color: "#fff", fontSize: "1.05rem" }}>{user.points} ⭐</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.5rem', paddingRight: '0.5rem' }}>
+            <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "0.8rem" }}>Points</span>
+            <span style={{ color: "#fff", fontSize: "0.95rem" }}>{user.points} ⭐</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '1rem', paddingRight: '1rem' }}>
-            <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "0.9rem" }}>Streak</span>
-            <span style={{ color: "#fff", fontSize: "1.05rem" }}>{user.streak} days</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '0.5rem', paddingRight: '0.5rem' }}>
+            <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "0.8rem" }}>Streak</span>
+            <span style={{ color: "#fff", fontSize: "0.95rem" }}>{user.streak} days</span>
           </div>
         </div>
-        <div style={{
-          display: "flex",
-          gap: "1.2rem",
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{
           margin: "0.5rem 0",
           justifyContent: "center"
         }}>

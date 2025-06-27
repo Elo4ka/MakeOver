@@ -29,7 +29,7 @@ const SubjectView: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="relative min-h-screen w-full overflow-hidden px-2 sm:px-0">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-8">
           <button
@@ -45,7 +45,7 @@ const SubjectView: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8 mt-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8 w-full max-w-6xl mx-auto">
           {subject.topics.map((topic) => (
             <div
               key={topic.id}
@@ -110,40 +110,40 @@ const SubjectView: React.FC = () => {
             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-yellow-100 rounded-b-xl opacity-70 blur-sm z-10" />
           </div>
         </div>
-        {/* Modal for exercises */}
-        {showExercisesModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-lg w-full relative">
-              <button
-                className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-red-500 font-bold"
-                onClick={() => setShowExercisesModal(false)}
-                aria-label="Закрыть"
-              >
-                ×
-              </button>
-              <h2 className="text-2xl font-bold mb-6 text-center text-gray-900">Інтэрактыўныя практыкаванні</h2>
-              <div className="grid grid-cols-1 gap-4">
-                {belarusianInteractiveExercises.map(ex => (
-                  <button
-                    key={ex.id}
-                    className="w-full bg-yellow-100 border-2 border-yellow-400 rounded-xl p-4 text-left shadow hover:bg-yellow-200 transition-all duration-200 flex items-center gap-4"
-                    onClick={() => {
-                      setShowExercisesModal(false);
-                      navigate(`/exercise/${ex.id}`);
-                    }}
-                  >
-                    <span className="text-2xl">🎯</span>
-                    <div>
-                      <div className="font-bold text-gray-900">{ex.title}</div>
-                      <div className="text-xs text-gray-600 mt-1">{ex.type === 'fill-blank' ? 'Запоўніце пропускі' : ex.type === 'matching' ? 'Супастаўленне' : 'Іншы тып'}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
+      </div>
+      {/* Modal for exercises */}
+      {showExercisesModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 px-2 sm:px-0">
+          <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-8 max-w-lg w-full relative">
+            <button
+              className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-red-500 font-bold"
+              onClick={() => setShowExercisesModal(false)}
+              aria-label="Закрыть"
+            >
+              ×
+            </button>
+            <h2 className="text-2xl font-bold mb-6 text-center text-gray-900">Інтэрактыўныя практыкаванні</h2>
+            <div className="grid grid-cols-1 gap-4">
+              {belarusianInteractiveExercises.map(ex => (
+                <button
+                  key={ex.id}
+                  className="w-full bg-yellow-100 border-2 border-yellow-400 rounded-xl p-4 text-left shadow hover:bg-yellow-200 transition-all duration-200 flex items-center gap-4"
+                  onClick={() => {
+                    setShowExercisesModal(false);
+                    navigate(`/exercise/${ex.id}`);
+                  }}
+                >
+                  <span className="text-2xl">🎯</span>
+                  <div>
+                    <div className="font-bold text-gray-900">{ex.title}</div>
+                    <div className="text-xs text-gray-600 mt-1">{ex.type === 'fill-blank' ? 'Запоўніце пропускі' : ex.type === 'matching' ? 'Супастаўленне' : 'Іншы тып'}</div>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -57,53 +57,53 @@ const TopicView: React.FC<TopicViewProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-transparent">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <button
-            onClick={() => navigate(`/subject/${subject!.id}`)}
-            className="mb-4 px-6 py-2 bg-blue-600 bg-opacity-80 text-white font-bold rounded-full shadow-lg hover:bg-red-600 hover:scale-105 transition-all duration-200"
-          >
-            ← Назад к предмету
-          </button>
-          
-          <div className="text-center mb-8">
-            <div className="text-5xl mb-4 text-white">{topic.icon}</div>
-            <h1 className="text-4xl font-bold text-white mb-4">{topic.name}</h1>
-            <p className="text-xl text-gray-200 max-w-2xl mx-auto mb-4">
-              {topic.description}
-            </p>
-            <div className="flex justify-center space-x-4 text-sm text-blue-200">
-              <span>Уровень {topic.level}</span>
-              <span>{lessons.length} уроков</span>
-              {hasQuizzes && <span>Тесты доступны</span>}
+    <div className="relative min-h-screen w-full overflow-hidden px-2 sm:px-0">
+      <div className="relative z-20 min-h-screen bg-transparent font-extrabold text-white rounded-2xl p-2 sm:p-4" style={{fontFamily: 'Montserrat, Fredoka One, Arial, sans-serif'}}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8 w-full max-w-6xl mx-auto">
+          <div className="mb-8">
+            <button
+              onClick={() => navigate(`/subject/${subject!.id}`)}
+              className="mb-4 px-6 py-2 bg-blue-600 bg-opacity-80 text-white font-bold rounded-full shadow-lg hover:bg-red-600 hover:scale-105 transition-all duration-200"
+            >
+              ← Назад к предмету
+            </button>
+            
+            <div className="text-center mb-8">
+              <div className="text-5xl mb-4 text-white">{topic.icon}</div>
+              <h1 className="text-4xl font-bold text-white mb-4">{topic.name}</h1>
+              <p className="text-xl text-gray-200 max-w-2xl mx-auto mb-4">
+                {topic.description}
+              </p>
+              <div className="flex justify-center space-x-4 text-sm text-blue-200">
+                <span>Уровень {topic.level}</span>
+                <span>{lessons.length} уроков</span>
+                {hasQuizzes && <span>Тесты доступны</span>}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-center space-x-4 mb-8">
-          {hasQuizzes && (
+          {/* Action Buttons */}
+          <div className="flex justify-center space-x-4 mb-8">
+            {hasQuizzes && (
+              <button
+                onClick={() => onStartQuiz(topic!.id)}
+                className="bg-green-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-green-600 hover:scale-105 transition-all duration-200 flex items-center space-x-2"
+              >
+                <span>📝</span>
+                <span>Пройти тест</span>
+              </button>
+            )}
+            
             <button
-              onClick={() => onStartQuiz(topic!.id)}
-              className="bg-green-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-green-600 hover:scale-105 transition-all duration-200 flex items-center space-x-2"
+              onClick={() => onStartExercise(topic!.id)}
+              className="bg-purple-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-purple-600 hover:scale-105 transition-all duration-200 flex items-center space-x-2"
             >
-              <span>📝</span>
-              <span>Пройти тест</span>
+              <span>🎮</span>
+              <span>Интерактивные упражнения</span>
             </button>
-          )}
-          
-          <button
-            onClick={() => onStartExercise(topic!.id)}
-            className="bg-purple-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-purple-600 hover:scale-105 transition-all duration-200 flex items-center space-x-2"
-          >
-            <span>🎮</span>
-            <span>Интерактивные упражнения</span>
-          </button>
-        </div>
+          </div>
 
-        {/* Lessons */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Lessons */}
           {lessons.map((lesson, index) => (
             <div
               key={lesson.id}
