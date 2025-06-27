@@ -17,7 +17,6 @@ const Profile: React.FC<ProfileProps> = ({ user, onAvatarChange, onMarkItemUsed 
   const navigate = useNavigate();
   const [uploading, setUploading] = useState(false);
   const [avatar, setAvatar] = useState(user.avatar);
-  const [saved, setSaved] = useState(false);
   const [pendingAvatar, setPendingAvatar] = useState<string | null>(null);
   const [selectedAvatar, setSelectedAvatar] = useState<string>(user.avatar);
 
@@ -33,8 +32,6 @@ const Profile: React.FC<ProfileProps> = ({ user, onAvatarChange, onMarkItemUsed 
   const handleEmojiSelect = async (emoji: string) => {
     await updateUserAvatar(user.id, emoji);
     setAvatar(emoji);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 1000);
   };
 
   // Handler for image upload
@@ -54,8 +51,6 @@ const Profile: React.FC<ProfileProps> = ({ user, onAvatarChange, onMarkItemUsed 
   const handleConfirmAvatar = async () => {
     if (selectedAvatar && selectedAvatar !== avatar) {
       setAvatar(selectedAvatar);
-      setSaved(true);
-      setTimeout(() => setSaved(false), 1000);
       // Update in Firestore
       const userAuth = auth.currentUser;
       if (userAuth) {

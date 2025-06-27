@@ -310,31 +310,6 @@ const App: React.FC = () => {
     );
   };
 
-  const handleSignIn = async () => {
-    try {
-      await signInWithPopup(auth, provider);
-      const user = auth.currentUser;
-      if (user) {
-        setGameState((prev) => ({
-          ...prev,
-          user: {
-            ...prev.user,
-            name: user.displayName || prev.user.name,
-          }
-        }));
-        // Update in Firestore as well
-        const db = getFirestore();
-        await setDoc(doc(db, 'users', user.uid), {
-          displayName: user.displayName,
-          email: user.email,
-          // add other fields as needed
-        }, { merge: true });
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const handleAvatarChange = (newAvatar: string) => {
     setGameState((prev) => ({
       ...prev,
