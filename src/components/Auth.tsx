@@ -2,7 +2,7 @@ import React from 'react';
 import { signInWithPopup, signOut } from 'firebase/auth';
 import { auth, provider } from '../firebase';
 
-const Auth: React.FC<{ user: any }> = ({ user }) => {
+const Auth: React.FC<{ user: any; onBeforeSignOut?: () => void }> = ({ user, onBeforeSignOut }) => {
   const handleSignIn = async () => {
     try {
       await signInWithPopup(auth, provider);
@@ -17,6 +17,7 @@ const Auth: React.FC<{ user: any }> = ({ user }) => {
   };
 
   const handleSignOut = async () => {
+    if (onBeforeSignOut) onBeforeSignOut();
     await signOut(auth);
   };
 
