@@ -9,6 +9,8 @@ export interface User {
   completedLessons: string[];
   avatar: string;
   email?: string;
+  purchasedItems?: { id: string; used: boolean }[]; // Array of purchased item objects
+  lastActiveDate?: string; // YYYY-MM-DD for streak tracking
 }
 
 export interface Lesson {
@@ -94,6 +96,7 @@ export interface ShopItem {
   id: string;
   name: string;
   description: string;
-  price: number;
+  price?: number;    // points price (optional)
+  xpPrice?: number;  // XP price (optional)
   icon: string; // emoji or image url
 } 

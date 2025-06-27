@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "An educational gamified app for interactive learning",
   "private": true,
+  "homepage": "https://elo4ka.github.io/MakeOver",
   "dependencies": {
     "@types/node": "^18.15.0",
     "@types/react": "^18.3.23",
@@ -24,7 +25,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -45,6 +48,7 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^27.5.2"
+    "@types/jest": "^27.5.2",
+    "gh-pages": "^6.3.0"
   }
 }
