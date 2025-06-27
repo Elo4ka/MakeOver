@@ -112,7 +112,9 @@ const TopicView: React.FC<TopicViewProps> = ({
               style={{backdropFilter: 'blur(2px)', boxShadow: '0 8px 32px 0 rgba(255, 215, 0, 0.5), 0 0 40px 10px #38bdf8', minHeight: '140px', maxHeight: '180px'}}
             >
               {/* Loot box lid */}
-              <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-10 h-3 bg-yellow-500 rounded-t-xl border-b-4 border-yellow-700 shadow-lg z-20 flex items-center justify-center">
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-10 h-3 shadow-lg z-20 flex items-center justify-center"
+                style={{ background: 'none', backgroundColor: 'transparent' }}
+              >
                 <span className="text-base animate-bounce">🪙</span>
               </div>
               {/* Sparkle effect */}

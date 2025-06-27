@@ -60,7 +60,9 @@ const SubjectView: React.FC = () => {
               }}
             >
               {/* Loot box lid (bouncing ball) */}
-              <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-4 bg-yellow-500 rounded-t-xl border-b-4 border-yellow-700 shadow-lg z-20 flex items-center justify-center">
+              <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-4 bg-yellow-500 rounded-t-xl border-b-4 border-yellow-700 shadow-lg z-20 flex items-center justify-center"
+                style={{ background: 'none', backgroundColor: 'transparent' }}
+              >
                 <span className="text-lg animate-bounce">🪙</span>
               </div>
               {/* Sparkle effect */}
@@ -80,7 +82,12 @@ const SubjectView: React.FC = () => {
           {/* Third card for exercises */}
           <div
             className="relative group bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-600 rounded-2xl shadow-2xl p-6 cursor-pointer border-8 border-yellow-500 hover:border-blue-400 transition-all duration-300 hover:shadow-blue-400 text-center transform hover:-translate-y-2 hover:scale-105 lootbox-card"
-            style={{backdropFilter: 'blur(2px)', boxShadow: '0 8px 32px 0 rgba(255, 215, 0, 0.5), 0 0 40px 10px #38bdf8', minHeight: '180px', maxHeight: '220px'}}
+            style={{
+              backdropFilter: 'blur(2px)',
+              boxShadow: '0 0 48px 8px #38bdf8cc, 0 0 40px 10px #38bdf8',
+              minHeight: '180px',
+              maxHeight: '220px'
+            }}
             onClick={() => setShowExercisesModal(true)}
           >
             {/* Loot box lid */}

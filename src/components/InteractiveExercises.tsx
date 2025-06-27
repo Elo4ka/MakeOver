@@ -17,7 +17,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
-function EWordsFillBlank({ currentExercise, setIsCorrect, setShowExplanation, setScore, onPassed }: { currentExercise: InteractiveExercise, setIsCorrect: (v: boolean) => void, setShowExplanation: (v: boolean) => void, setScore: (v: number) => void, onPassed?: () => void }) {
+function EWordsFillBlank({ currentExercise, setIsCorrect, setShowExplanation, setScore, onPassed, onComplete }: { currentExercise: InteractiveExercise, setIsCorrect: (v: boolean) => void, setShowExplanation: (v: boolean) => void, setScore: (v: number) => void, onPassed?: () => void, onComplete?: (score: number) => void }) {
   // Split the sentence into words with blanks
   const wordsWithBlanks = currentExercise.content.blanks[0].before.split(',').map((w: string) => w.trim());
   const correctWords = (currentExercise.correctAnswer as string[]);
@@ -110,8 +110,10 @@ function EWordsFillBlank({ currentExercise, setIsCorrect, setShowExplanation, se
     const allCorrect = correctness.every(Boolean);
     setIsCorrect(allCorrect);
     setShowExplanation(true);
-    setScore(allCorrect ? currentExercise.points : Math.round((correctCount / total) * currentExercise.points));
+    const finalScore = allCorrect ? currentExercise.points : Math.round((correctCount / total) * currentExercise.points);
+    setScore(finalScore);
     if (allCorrect && onPassed) onPassed();
+    if (allCorrect && onComplete) onComplete(finalScore);
   };
 
   // Render the text with multiple blanks per word using the flat blanks array
@@ -325,8 +327,10 @@ const InteractiveExercises: React.FC<InteractiveExercisesProps> = ({
     if (isCorrect) {
       // For matching exercises, always use the full points if all correct
       if (currentExercise && currentExercise.type === 'matching' && isCorrect) {
+        console.log('Calling onComplete with points:', currentExercise.points || score);
         onComplete(currentExercise.points || score);
       } else {
+        console.log('Calling onComplete with score:', score);
         onComplete(score);
       }
     } else {
@@ -550,7 +554,7 @@ const InteractiveExercises: React.FC<InteractiveExercisesProps> = ({
       case 'fill-blank': {
         const isEWordsTask = currentExercise.id === 'belarusian-grammar-e-words-1' || currentExercise.id === 'belarusian-grammar-e-words-2';
         if (isEWordsTask) {
-          return <EWordsFillBlank currentExercise={currentExercise} setIsCorrect={setIsCorrect} setShowExplanation={setShowExplanation} setScore={setScore} onPassed={handleNext} />;
+          return <EWordsFillBlank currentExercise={currentExercise} setIsCorrect={setIsCorrect} setShowExplanation={setShowExplanation} setScore={setScore} onPassed={handleNext} onComplete={onComplete} />;
         }
         // fallback to default fill-blank logic
         return (
@@ -681,10 +685,10 @@ const InteractiveExercises: React.FC<InteractiveExercisesProps> = ({
 
           {showExplanation && (
             <button
-              onClick={handleNext}
+              onClick={() => { onComplete(score); }}
               className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-red-600 transition-all duration-200"
             >
-              {isCorrect ? 'Завершить' : 'Попробовать снова'}
+              Завершить
             </button>
           )}
         </div>
