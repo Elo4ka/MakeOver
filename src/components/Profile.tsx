@@ -24,7 +24,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onAvatarChange, onMarkItemUsed 
   const superAvatarItem = shopItems.find(item => item.id === 'super-avatar');
   const hasSuperAvatar = user.purchasedItems?.some(p => p.id === 'super-avatar');
   const emojiOptions = [
-    "🦫", "🐻", "🦊", "🐱", "🐶", "🦄", "🐸", "🐧", "🐼", "👾", "👤",
+    "🦫", "🐻", "🦊", "🐱", "🐶", "🦄", "🐸", "🐧", "🐼", "👤",
     ...(hasSuperAvatar && superAvatarItem ? [superAvatarItem.icon] : [])
   ];
 
@@ -175,7 +175,7 @@ const Profile: React.FC<ProfileProps> = ({ user, onAvatarChange, onMarkItemUsed 
                 paddingRight: "1.5rem"
               }}
             >
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-4" style={{
+              <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4" style={{
                 background: "rgba(56, 189, 248, 0.15)",
                 borderRadius: "1rem",
                 padding: "0.5rem",

@@ -12,7 +12,7 @@ import Profile from './components/Profile';
 import Shop from './components/Shop';
 import { GameState, User, Lesson as LessonType, Quiz as QuizType, ShopItem } from './types';
 import { getQuizzesByTopic } from './data/quizzes';
-import { getRandomExercise, getExerciseById } from './data/interactiveExercises';
+import { getRandomExercise, getExerciseById, belarusianInteractiveExercises } from './data/interactiveExercises';
 import Auth from './components/Auth';
 import { saveProgress, loadProgress } from './firebaseHelpers';
 import { onAuthStateChanged, signInWithPopup } from 'firebase/auth';
@@ -60,6 +60,7 @@ const App: React.FC = () => {
   const [showDance, setShowDance] = useState(false);
   const lastExerciseMaxPoints = useRef<number | null>(null);
   const [firebaseUser, setFirebaseUser] = useState<any>(null);
+  const [showExercisesModal, setShowExercisesModal] = useState<false | 'exercises' | 'missions'>(false);
 
   // Load game state from localStorage on app start
   useEffect(() => {
@@ -399,7 +400,57 @@ const App: React.FC = () => {
                       onLessonSelect={handleLessonSelect}
                       onStartQuiz={handleStartQuiz}
                       onStartExercise={handleStartExercise}
+                      setShowExercisesModal={setShowExercisesModal}
                     />
+                    {/* Modal for exercises (Belarusian) */}
+                    {showExercisesModal === 'exercises' && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 px-2 sm:px-0">
+                        <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-8 max-w-lg w-full relative">
+                          <button
+                            className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-red-500 font-bold"
+                            onClick={() => setShowExercisesModal(false)}
+                            aria-label="Закрыть"
+                          >
+                            ×
+                          </button>
+                          <h2 className="text-2xl font-bold mb-6 text-center text-gray-900">Місіі</h2>
+                          <div className="grid grid-cols-1 gap-4">
+                            {belarusianInteractiveExercises.map(ex => (
+                              <button
+                                key={ex.id}
+                                className="w-full bg-yellow-100 border-2 border-yellow-400 rounded-xl p-4 text-left shadow hover:bg-yellow-200 transition-all duration-200 flex items-center gap-4"
+                                onClick={() => {
+                                  setShowExercisesModal(false);
+                                  navigate(`/exercise/${ex.id}`);
+                                }}
+                              >
+                                <span className="text-2xl">🎯</span>
+                                <div>
+                                  <div className="font-bold text-gray-900">{ex.title}</div>
+                                  <div className="text-xs text-gray-600 mt-1">{ex.type === 'fill-blank' ? 'Запоўніце пропускі' : ex.type === 'matching' ? 'Супастаўленне' : 'Іншы тып'}</div>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    {/* Modal for missions (Russian) */}
+                    {showExercisesModal === 'missions' && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 px-2 sm:px-0">
+                        <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-8 max-w-lg w-full relative">
+                          <button
+                            className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-red-500 font-bold"
+                            onClick={() => setShowExercisesModal(false)}
+                            aria-label="Закрыть"
+                          >
+                            ×
+                          </button>
+                          <h2 className="text-2xl font-bold mb-6 text-center text-gray-900">Миссии</h2>
+                          <div className="flex items-center justify-center h-32 text-gray-500 text-lg font-semibold">Скоро здесь появятся миссии!</div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </motion.div>

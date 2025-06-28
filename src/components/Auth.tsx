@@ -39,7 +39,7 @@ const Auth: React.FC<{ user: any; onBeforeSignOut?: () => void }> = ({ user, onB
         boxShadow: '0 0 8px #ef4444',
       }}
     >
-      Войти через Google
+      Войти
     </button>
   );
 };

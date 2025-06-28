@@ -324,7 +324,7 @@ export const belarusianInteractiveExercises: InteractiveExercise[] = [
   {
     id: 'belarusian-grammar-e-words-1',
     type: 'fill-blank',
-    title: 'Выпішыце словы з літарай э',
+    title: 'Запоўніце пропускі',
     instructions: 'Запоўніце пропускі',
     content: {
       blanks: [
@@ -364,7 +364,7 @@ export const belarusianInteractiveExercises: InteractiveExercise[] = [
   {
     id: 'belarusian-grammar-e-words-2',
     type: 'fill-blank',
-    title: 'Выпішыце словы з літарай э/а/я/о/і',
+    title: 'Запоўніце пропускі',
     instructions: 'Запоўніце пропускі',
     content: {
       blanks: [
@@ -375,6 +375,25 @@ export const belarusianInteractiveExercises: InteractiveExercise[] = [
       "закаранелы", "сакратар", "шарсцяны", "стомлены", "пагроза", "трыо", "жалеза", "пчаляр", "рэпартаж", "маладзечна", "чарга", "крывавы", "пэндзаль", "рамонт", "шчодры", "катэт", "шэрань", "шаснаццаць", "бесцырымонны", "стэлаж", "шэдэўр", "бухгалтар", "чараўнік", "дэкада", "угнаенне", "тэхнічны", "дрывотня", "чэрствы", "счарсцвелы", "шэравокі", "пагражаць"
     ],
     points: 30,
+    difficulty: 'medium'
+  }
+];
+
+export const englishInteractiveExercises = [
+  {
+    id: 'english-grammar-1',
+    type: 'fill-blank',
+    title: 'Present Perfect vs Past Simple',
+    instructions: 'Fill in the blanks with the correct verb form.',
+    content: {
+      blanks: [
+        { before: 'I _____ (never/visit) Paris.', after: '' },
+        { before: 'I _____ (visit) Paris last summer.', after: '' },
+        { before: 'She _____ (already/finish) her homework.', after: '' }
+      ]
+    },
+    correctAnswer: ['have never visited', 'visited', 'has already finished'],
+    points: 15,
     difficulty: 'medium'
   }
 ];

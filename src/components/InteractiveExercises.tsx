@@ -17,120 +17,79 @@ function shuffleArray<T>(array: T[]): T[] {
   return arr;
 }
 
-function EWordsFillBlank({ currentExercise, setIsCorrect, setShowExplanation, setScore, onPassed, onComplete }: { currentExercise: InteractiveExercise, setIsCorrect: (v: boolean) => void, setShowExplanation: (v: boolean) => void, setScore: (v: number) => void, onPassed?: () => void, onComplete?: (score: number) => void }) {
-  // Split the sentence into words with blanks
-  const wordsWithBlanks = currentExercise.content.blanks[0].before.split(',').map((w: string) => w.trim());
-  const correctWords = (currentExercise.correctAnswer as string[]);
+// Shared type for blanks info
+type BlankInfo = { wordIdx: number; partIdx: number; correctLetter: string; before: string; after: string; };
+
+function EWordsFillBlank({
+  currentExercise,
+  inputs,
+  onInputChange,
+  onCheck,
+  onReset,
+  checked,
+  firstTryCorrect,
+  currentCorrectness,
+  allFilled,
+  score
+}: {
+  currentExercise: InteractiveExercise,
+  inputs: string[],
+  onInputChange: (idx: number, value: string) => void,
+  onCheck: () => void,
+  onReset: () => void,
+  checked: boolean,
+  firstTryCorrect: boolean[],
+  currentCorrectness: boolean[],
+  allFilled: boolean,
+  score: number
+}) {
+  // Defensive checks to prevent runtime errors
+  const blanksArr = currentExercise?.content?.blanks;
+  const beforeStr = Array.isArray(blanksArr) && blanksArr[0]?.before ? blanksArr[0].before : '';
+  const wordsWithBlanks: string[] = beforeStr.split(',').map((w: string) => w.trim());
+  
+  const correctAnswerArr = Array.isArray(currentExercise?.correctAnswer) ? currentExercise.correctAnswer : [];
+  const correctWords: string[] = correctAnswerArr as string[];
 
   // Precompute a flat array of blanks for robust rendering
-  type BlankInfo = {
-    wordIdx: number;
-    partIdx: number;
-    correctLetter: string;
-    before: string;
-    after: string;
-  };
   let blanks: BlankInfo[] = [];
   wordsWithBlanks.forEach((blankWord: string, wordIdx: number) => {
-    const correctWord = correctWords[wordIdx];
+    const correctWord = correctWords[wordIdx] || '';
     const parts = blankWord.split('..');
     if (parts.length === 1) return; // no blank
-    let cursor = 0;
+    let letterIndex = 0;
     for (let i = 0; i < parts.length - 1; i++) {
-      cursor += parts[i].length;
+      letterIndex += parts[i].length;
       blanks.push({
         wordIdx,
         partIdx: i,
-        correctLetter: correctWord[cursor] || '',
+        correctLetter: correctWord[letterIndex] || '',
         before: parts[i],
         after: parts[i + 1],
       });
-      cursor += 1;
     }
   });
 
-  // State for all blanks
-  const [inputs, setInputs] = useState<string[]>(Array(blanks.length).fill(''));
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [animations, setAnimations] = useState<string[]>(Array(blanks.length).fill(''));
-  const [checked, setChecked] = useState(false);
-  const allFilled = inputs.every(val => val.trim().length > 0);
-
-  // Check correctness for each blank (case/trim insensitive)
-  const correctness = inputs.map((input, idx) =>
-    input.trim().toLowerCase() === (blanks[idx].correctLetter || '').trim().toLowerCase()
-  );
-
-  // Progress indicator
-  const correctCount = correctness.filter(Boolean).length;
-  const total = blanks.length;
-
-  // Partial credit
-  useEffect(() => {
-    if (!checked) {
-      const partialScore = Math.round((correctCount / total) * currentExercise.points);
-      setScore(partialScore);
-      setIsCorrect(false);
-      setShowExplanation(false);
-    }
-  }, [inputs, checked, correctCount, currentExercise.points, setScore, setIsCorrect, setShowExplanation, total]);
-
-  // Handle input change, auto-focus next blank, and animate
-  const handleInputChange = (idx: number, value: string) => {
-    const newInputs = [...inputs];
-    newInputs[idx] = value;
-    setInputs(newInputs);
-    // Animate feedback
-    const isNowCorrect = value.trim().toLowerCase() === (blanks[idx].correctLetter || '').trim().toLowerCase();
-    setAnimations(anims => {
-      const newAnims = [...anims];
-      newAnims[idx] = isNowCorrect ? 'animate-bounce' : value.length > 0 ? 'animate-shake' : '';
-      return newAnims;
-    });
-    // Auto-focus next blank if correct
-    if (isNowCorrect && idx < total - 1) {
-      setTimeout(() => {
-        inputRefs.current[idx + 1]?.focus();
-      }, 200);
-    }
-  };
-
-  // Reset
-  const handleReset = () => {
-    setInputs(Array(blanks.length).fill(''));
-    setAnimations(Array(blanks.length).fill(''));
-    setChecked(false);
-    setShowExplanation(false);
-    setIsCorrect(false);
-  };
-
-  // Check answers
-  const handleCheck = () => {
-    setChecked(true);
-    const allCorrect = correctness.every(Boolean);
-    setIsCorrect(allCorrect);
-    setShowExplanation(true);
-    const finalScore = allCorrect ? currentExercise.points : Math.round((correctCount / total) * currentExercise.points);
-    setScore(finalScore);
-    if (allCorrect && onPassed) onPassed();
-    if (allCorrect && onComplete) onComplete(finalScore);
-  };
-
-  // Render the text with multiple blanks per word using the flat blanks array
   let blankRenderIdx = 0;
   return (
-    <div className="space-y-6">
-      <div className="bg-blue-600 bg-opacity-30 p-6 rounded-lg border-2 border-blue-400">
-        {/* Progress Indicator */}
-        <div className="mb-2 text-white font-semibold text-center">
-          {correctCount} / {total} правільна
-          <div className="relative w-full bg-gray-300 rounded-full h-2 mt-2" style={{overflow: 'visible'}}>
+    <>
+      <div className="space-y-6">
+        <div className="bg-blue-600 bg-opacity-30 p-6 rounded-lg border-2 border-blue-400">
+          {/* Trophy score display above progress bar, inside card area */}
+          <div className="w-full flex justify-center mb-2">
+            <div className="text-3xl font-extrabold text-yellow-300 flex items-center gap-2 drop-shadow-lg" style={{textShadow: '0 0 16px #facc15, 0 0 8px #fff8'}}>
+              <span role="img" aria-label="trophy">🏆</span> {score} баллов
+            </div>
+          </div>
+          {/* Progress bar and capybara */}
+          <div className="relative w-full bg-gradient-to-r from-green-400 via-yellow-300 to-pink-400 rounded-full h-4 md:h-5 mt-2 md:mt-4 shadow-lg" style={{overflow: 'visible'}}>
             {/* Capybara emoji avatar */}
             <div
               style={{
                 position: 'absolute',
-                top: '-1.7em',
-                left: `calc(${(correctCount / total) * 100}% - 1em)`,
+                top: '-2em',
+                left: `calc(0% - 1.2em)`,
                 transition: 'left 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
                 fontSize: '2em',
                 pointerEvents: 'none',
@@ -140,62 +99,66 @@ function EWordsFillBlank({ currentExercise, setIsCorrect, setShowExplanation, se
             >
               🦫
             </div>
-            <div className="bg-green-500 h-2 rounded-full transition-all duration-500" style={{ width: `${(correctCount / total) * 100}%`, boxShadow: '0 0 8px 2px #22c55e, 0 0 16px 4px #22c55e55' }}></div>
+            <div className="bg-green-400 h-5 rounded-full transition-all duration-500" style={{ width: `0%`, boxShadow: '0 0 12px 4px #22c55e, 0 0 24px 8px #22c55e55' }}></div>
           </div>
-        </div>
-        <div className="space-y-4">
-          <div className="flex flex-wrap items-center gap-2 mb-4">
-            {wordsWithBlanks.map((word: string, wordIdx: number) => {
-              const parts = word.split('..');
-              if (parts.length === 1) {
-                return <span key={wordIdx}>{word}{wordIdx < wordsWithBlanks.length - 1 && <span className="text-white text-lg">,</span>}</span>;
-              }
-              const rendered = parts.map((part, i) => {
-                if (i === parts.length - 1) return part;
-                const idx = blankRenderIdx;
-                blankRenderIdx++;
-                return (
-                  <React.Fragment key={i}>
-                    {part}
-                    <input
-                      ref={el => inputRefs.current[idx] = el}
-                      type="text"
-                      value={inputs[idx]}
-                      onChange={e => handleInputChange(idx, e.target.value)}
-                      className={`w-7 md:w-8 px-0.5 py-0.5 rounded border-2 font-bold text-center text-gray-900 bg-yellow-100 focus:outline-none transition-all duration-200 text-xs md:text-sm
-                        ${inputs[idx].length === 0 ? 'border-yellow-400' : correctness[idx] ? 'border-green-500 bg-green-100' : 'border-red-500 bg-red-100'}
-                        ${animations[idx]}`}
-                      maxLength={1}
-                      style={{ minWidth: 10, marginRight: 1 }}
-                      autoComplete="off"
-                    />
-                    {inputs[idx].length > 0 && (
-                      correctness[idx] ? <span className="ml-1 text-green-600 font-bold">✔</span> : <span className="ml-1 text-red-600 font-bold">✗</span>
-                    )}
-                  </React.Fragment>
-                );
-              });
-              return <span key={wordIdx}>{rendered}{wordIdx < wordsWithBlanks.length - 1 && <span className="text-white text-lg">,</span>}</span>;
-            })}
+          {/* Main exercise content (inputs, etc.) below the progress bar */}
+          <div className="space-y-4 mt-6">
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              {wordsWithBlanks.map((word: string, wordIdx: number) => {
+                const parts = word.split('..');
+                if (parts.length === 1) {
+                  return <span key={wordIdx}>{word}{wordIdx < wordsWithBlanks.length - 1 && <span className="text-white text-lg">,</span>}</span>;
+                }
+                const rendered = parts.map((part, i) => {
+                  if (i === parts.length - 1) return part;
+                  const idx = blankRenderIdx;
+                  blankRenderIdx++;
+                  return (
+                    <React.Fragment key={i}>
+                      {part}
+                      <input
+                        ref={el => inputRefs.current[idx] = el}
+                        type="text"
+                        value={inputs[idx] || ''}
+                        onChange={e => onInputChange(idx, e.target.value)}
+                        data-blank-index={idx}
+                        className={`w-7 h-7 md:w-8 md:h-8 rounded-lg border font-medium text-center text-white bg-gradient-to-br from-blue-800 via-indigo-700 to-purple-800 focus:outline-none transition-all duration-200 text-lg md:text-xl font-sans shadow
+                          ${(inputs[idx] || '').length === 0 ? 'border-blue-400' : currentCorrectness[idx] ? 'border-green-400 bg-green-700' : 'border-red-400 bg-red-700'}
+                          hover:scale-105 focus:scale-105`}
+                        maxLength={1}
+                        style={{ minWidth: 24, minHeight: 24, boxShadow: '0 1px 4px 0 #312e8133', marginRight: 4, padding: 0 }}
+                        autoComplete="off"
+                        inputMode="text"
+                        pattern="[A-Za-zА-Яа-яЁёІіЎўЭэ]+"
+                      />
+                      {(inputs[idx] || '').length > 0 && (
+                        currentCorrectness[idx] ? <span className="ml-1 text-green-600 font-bold">✔</span> : <span className="ml-1 text-red-600 font-bold">✗</span>
+                      )}
+                    </React.Fragment>
+                  );
+                });
+                return <span key={wordIdx}>{rendered}{wordIdx < wordsWithBlanks.length - 1 && <span className="text-white text-lg">,</span>}</span>;
+              })}
+            </div>
           </div>
-        </div>
-        <div className="mt-6 flex gap-4">
-          <button
-            onClick={handleCheck}
-            className="bg-green-600 text-white px-6 py-2 rounded-full font-bold hover:bg-green-700 transition-all duration-200"
-            disabled={!allFilled || checked}
-          >
-            Проверить
-          </button>
-          <button
-            onClick={handleReset}
-            className="bg-gray-400 text-white px-6 py-2 rounded-full font-bold hover:bg-gray-500 transition-all duration-200"
-          >
-            Сбросить
-          </button>
+          <div className="mt-6 flex gap-4">
+            <button
+              onClick={onCheck}
+              className="bg-green-500 text-white w-full sm:w-auto px-2 sm:px-4 py-1 sm:py-1.5 rounded-2xl font-extrabold text-sm sm:text-base shadow-xl hover:bg-green-400 hover:scale-105 hover:shadow-2xl transition-all duration-200 border-2 border-green-300 mb-2 sm:mb-0 h-8 sm:h-9"
+              disabled={!allFilled || checked}
+              style={{textShadow: '0 2px 8px #fff8'}}>
+              Проверить
+            </button>
+            <button
+              onClick={onReset}
+              className="bg-gray-400 text-white w-full sm:w-auto px-2 sm:px-4 py-1 sm:py-1.5 rounded-2xl font-extrabold text-sm sm:text-base shadow-xl hover:bg-gray-300 hover:scale-105 hover:shadow-2xl transition-all duration-200 border-2 border-gray-300 h-8 sm:h-9"
+              style={{textShadow: '0 2px 8px #fff8'}}>
+              Сбросить
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -339,6 +302,132 @@ const InteractiveExercises: React.FC<InteractiveExercisesProps> = ({
     }
   };
 
+  // For e-words fill-in-the-blanks, manage state at the top level
+  const isEWordsTask = currentExercise && (currentExercise.id === 'belarusian-grammar-e-words-1' || currentExercise.id === 'belarusian-grammar-e-words-2');
+  let blanks: BlankInfo[] = [];
+  let correctWords: string[] = [];
+  if (isEWordsTask && currentExercise) {
+    // Defensive checks to prevent runtime errors
+    const blanksArr = currentExercise?.content?.blanks;
+    const beforeStr = Array.isArray(blanksArr) && blanksArr[0]?.before ? blanksArr[0].before : '';
+    const wordsWithBlanks: string[] = beforeStr.split(',').map((w: string) => w.trim());
+    const correctAnswerArr = Array.isArray(currentExercise?.correctAnswer) ? currentExercise.correctAnswer : [];
+    correctWords = correctAnswerArr as string[];
+    wordsWithBlanks.forEach((blankWord: string, wordIdx: number) => {
+      const correctWord = correctWords[wordIdx] || '';
+      const parts = blankWord.split('..');
+      if (parts.length === 1) return;
+      let blankIndex = 0;
+      for (let i = 0; i < parts.length - 1; i++) {
+        blankIndex += parts[i].length;
+        blanks.push({
+          wordIdx,
+          partIdx: i,
+          correctLetter: correctWord[blankIndex] || '',
+          before: parts[i],
+          after: parts[i + 1],
+        });
+        blankIndex += 1;
+      }
+    });
+  }
+  const [eInputs, setEInputs] = React.useState<string[]>([]);
+  const [firstTryCorrect, setFirstTryCorrect] = React.useState<boolean[]>([]);
+  const [attempted, setAttempted] = React.useState<boolean[]>([]);
+  const [eWordsTotal, setEWordsTotal] = useState(0);
+  const [eChecked, setEChecked] = React.useState(false); // Only for locking after check
+
+  // Calculate current correctness for visual feedback (separate from first-try scoring)
+  const currentCorrectness = React.useMemo(() => {
+    return eInputs.map((input, idx) => {
+      const blank = blanks[idx];
+      const correctLetter = blank?.correctLetter || '';
+      const userInput = input.trim().toLowerCase();
+      const expected = correctLetter.trim().toLowerCase();
+      return userInput === expected;
+    });
+  }, [eInputs, blanks]);
+
+  // Input handler: always called, updates first-try correctness
+  const handleEWordsInputChange = (idx: number, value: string) => {
+    setEInputs((prev) => {
+      const newArr = [...prev];
+      newArr[idx] = value;
+      return newArr;
+    });
+    setFirstTryCorrect((prev) => {
+      const arr = [...prev];
+      // Only set to true if not previously set and this is the first attempt
+      if (arr[idx] === false && attempted[idx] === false) {
+        const blank = blanks[idx];
+        const correctLetter = blank?.correctLetter || '';
+        const userInput = value.trim().toLowerCase();
+        const expected = correctLetter.trim().toLowerCase();
+        arr[idx] = userInput === expected;
+      }
+      // Note: We don't change firstTryCorrect[idx] to false if user corrects a mistake
+      // This preserves the first-try scoring while allowing corrections
+      return arr;
+    });
+    setAttempted((prev) => {
+      const arr = [...prev];
+      arr[idx] = true;
+      return arr;
+    });
+
+    // Auto-advance to next blank if current answer is correct
+    if (value.trim().length > 0) {
+      const blank = blanks[idx];
+      const correctLetter = blank?.correctLetter || '';
+      const userInput = value.trim().toLowerCase();
+      const expected = correctLetter.trim().toLowerCase();
+      
+      if (userInput === expected && idx < blanks.length - 1) {
+        // Move cursor to next blank after a short delay
+        setTimeout(() => {
+          const nextInput = document.querySelector(`input[data-blank-index="${idx + 1}"]`) as HTMLInputElement;
+          if (nextInput) {
+            nextInput.focus();
+          }
+        }, 100);
+      }
+    }
+  };
+
+  // Reset all state on exercise change
+  React.useEffect(() => {
+    if (isEWordsTask && blanks.length > 0) {
+      setEInputs(Array(blanks.length).fill(''));
+      setFirstTryCorrect(Array(blanks.length).fill(false));
+      setAttempted(Array(blanks.length).fill(false));
+      setEChecked(false);
+    }
+    // eslint-disable-next-line
+  }, [currentExercise && currentExercise.id, blanks.length]);
+
+  // Set eWordsTotal at the top level (not inside renderExercise)
+  useEffect(() => {
+    if (isEWordsTask && blanks.length > 0) {
+      setEWordsTotal(blanks.length);
+    }
+  }, [isEWordsTask, blanks.length, currentExercise && currentExercise.id]);
+
+  // Handler for check (finalize and transfer points)
+  const handleEWordsCheck = () => {
+    setEChecked(true);
+    // Transfer points to profile/parent
+    const score = firstTryCorrect.filter(Boolean).length;
+    onComplete(score);
+  };
+
+  // Handler for reset
+  const handleEWordsReset = () => {
+    setEInputs(Array(blanks.length).fill(''));
+    setFirstTryCorrect(Array(blanks.length).fill(false));
+    setAttempted(Array(blanks.length).fill(false));
+    setEChecked(false);
+  };
+
   const renderExercise = () => {
     if (!currentExercise) return null;
 
@@ -419,6 +508,7 @@ const InteractiveExercises: React.FC<InteractiveExercisesProps> = ({
           side === 'left' ? selectedLeft === index : false;
 
         const handleCheck = () => {
+          alert('handleCheck called');
           // Build user answer as array of {left, right} values (use text, not objects)
           const userAnswer = matchedPairs.map(pair => ({
             left: currentExercise.content.pairs[pair.left].left,
@@ -552,9 +642,23 @@ const InteractiveExercises: React.FC<InteractiveExercisesProps> = ({
         );
 
       case 'fill-blank': {
-        const isEWordsTask = currentExercise.id === 'belarusian-grammar-e-words-1' || currentExercise.id === 'belarusian-grammar-e-words-2';
-        if (isEWordsTask) {
-          return <EWordsFillBlank currentExercise={currentExercise} setIsCorrect={setIsCorrect} setShowExplanation={setShowExplanation} setScore={setScore} onPassed={handleNext} onComplete={onComplete} />;
+        if (isEWordsTask && blanks.length > 0) {
+          const allFilled = eInputs.every(val => val.trim().length > 0);
+          const score = firstTryCorrect.filter(Boolean).length;
+          return (
+            <EWordsFillBlank
+              currentExercise={currentExercise}
+              inputs={eInputs}
+              onInputChange={handleEWordsInputChange}
+              onCheck={handleEWordsCheck}
+              onReset={handleEWordsReset}
+              checked={eChecked}
+              firstTryCorrect={firstTryCorrect}
+              currentCorrectness={currentCorrectness}
+              allFilled={allFilled}
+              score={score}
+            />
+          );
         }
         // fallback to default fill-blank logic
         return (
@@ -615,36 +719,74 @@ const InteractiveExercises: React.FC<InteractiveExercisesProps> = ({
     }
   };
 
+  const [showMonster, setShowMonster] = useState(false);
+  const [monsterSide, setMonsterSide] = useState<'left' | 'right'>('left');
+  const monsterAudioRef = useRef<HTMLAudioElement>(null);
+
+  // Play monster sound when showMonster becomes true
+  useEffect(() => {
+    if (showMonster && monsterAudioRef.current) {
+      monsterAudioRef.current.currentTime = 0;
+      monsterAudioRef.current.play();
+    }
+  }, [showMonster]);
+
+  // Debug log for monster overlay rendering
+  useEffect(() => {
+    if (showMonster) {
+      console.log('MONSTER OVERLAY RENDERED (parent)');
+    }
+  }, [showMonster]);
+
+  // Monster overlay timeout logic in parent
+  useEffect(() => {
+    let timeout: NodeJS.Timeout | null = null;
+    if (showMonster) {
+      timeout = setTimeout(() => {
+        console.log('showMonster set to false (timeout, parent)');
+        setShowMonster(false);
+      }, 3000);
+    }
+    return () => {
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [showMonster]);
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="bg-transparent rounded-lg p-8">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-900 via-indigo-800 to-purple-900">
+      <div className="bg-blue-950 bg-opacity-90 rounded-3xl p-2 sm:p-4 md:p-8 shadow-2xl border-4 border-yellow-400/60 mx-auto w-full max-w-[95vw] md:max-w-[70vw]" style={{boxShadow: '0 0 32px 8px #facc15aa, 0 8px 32px 0 #0008'}}>
+        <div className="flex justify-between items-center mb-8">
           <button 
             onClick={onBack}
             className="text-white hover:text-blue-300 font-bold px-4 py-2 bg-blue-600 bg-opacity-80 rounded-full hover:bg-red-600 transition-all duration-200"
+            aria-label="Назад"
           >
-            ← Назад
+            ←
           </button>
           
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-white mb-2">{currentExercise?.title}</h2>
-            <p className="text-gray-200">
+          <div className="w-full text-center mb-2 sm:mb-4">
+            <h2 className="text-2xl md:text-4xl font-extrabold text-white drop-shadow-lg mb-2 font-mono tracking-wide text-center break-words" style={{letterSpacing: '0.04em'}}>
+              {(currentExercise?.title || '').endsWith('э') ? (
+                <>
+                  {currentExercise?.title?.slice(0, -1)}
+                  <span className="text-yellow-300">э</span>
+                </>
+              ) : (currentExercise?.title || '')}
+            </h2>
+            <p className="text-indigo-200 text-base md:text-lg font-semibold text-center">
               {currentExercise?.difficulty === 'easy' ? 'Легко' :
                currentExercise?.difficulty === 'medium' ? 'Средне' : 'Сложно'}
             </p>
           </div>
-
-          <div className="text-right">
-            <div className="text-xl font-semibold text-yellow-400">
-              {score} баллов
-            </div>
-          </div>
         </div>
 
         {/* Instructions */}
-        <div className="bg-blue-600 bg-opacity-30 rounded-lg p-4 mb-6 border-2 border-blue-400">
-          <p className="text-white font-semibold">{currentExercise?.instructions}</p>
+        <div className="bg-blue-600 bg-opacity-30 rounded-lg p-2 sm:p-4 mb-4 sm:mb-6 border-2 border-blue-400 text-center">
+          {(currentExercise?.id === 'belarusian-grammar-e-words-1' || currentExercise?.id === 'belarusian-grammar-e-words-2') ? (
+            <p className="text-indigo-100 font-semibold text-center text-base md:text-lg">{firstTryCorrect.filter(Boolean).length} / {eWordsTotal} правільна</p>
+          ) : (
+            <p className="text-white font-semibold text-center text-base md:text-lg">{currentExercise?.instructions}</p>
+          )}
         </div>
 
         {/* Exercise Content */}
@@ -653,7 +795,7 @@ const InteractiveExercises: React.FC<InteractiveExercisesProps> = ({
         </div>
 
         {/* Results */}
-        {showExplanation && (
+        {showExplanation && !(currentExercise?.id === 'belarusian-grammar-e-words-1' || currentExercise?.id === 'belarusian-grammar-e-words-2') && (
           <div className={`rounded-lg p-4 mb-6 border-2 ${
             isCorrect ? 'bg-green-600 bg-opacity-30 border-green-400' : 'bg-red-600 bg-opacity-30 border-red-400'
           }`}>
@@ -675,24 +817,25 @@ const InteractiveExercises: React.FC<InteractiveExercisesProps> = ({
         )}
 
         {/* Navigation */}
-        <div className="flex justify-between">
+        <div className="flex justify-center items-center mt-8 mb-2 w-full">
           <button
             onClick={onBack}
-            className="px-4 py-2 text-gray-300 hover:text-white font-bold"
+            className="bg-red-500 text-white px-4 py-1.5 rounded-2xl font-extrabold text-sm sm:text-base shadow-xl hover:bg-red-400 hover:scale-105 hover:shadow-2xl transition-all duration-200 border-2 border-red-300 h-8 sm:h-9"
+            style={{textShadow: '0 2px 8px #fff8'}}
           >
             Отмена
           </button>
-
-          {showExplanation && (
-            <button
-              onClick={() => { onComplete(score); }}
-              className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold hover:bg-red-600 transition-all duration-200"
-            >
-              Завершить
-            </button>
-          )}
         </div>
       </div>
+      {showMonster && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-80">
+          <span style={{fontSize: '8rem', filter: 'drop-shadow(0 0 32px #f00)'}} role="img" aria-label="monster">👹</span>
+          <div style={{position: 'absolute', top: 20, left: 20, color: 'yellow', fontWeight: 'bold', fontSize: 32, zIndex: 10000, background: 'rgba(0,0,0,0.7)', padding: '12px 32px', borderRadius: 16, border: '2px solid #fff'}}>
+            MONSTER DEBUG: Overlay is rendered
+          </div>
+        </div>
+      )}
+      <audio ref={monsterAudioRef} src="/monster.mp3" preload="auto" />
     </div>
   );
 };

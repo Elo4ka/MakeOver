@@ -12,6 +12,9 @@ interface LessonViewProps {
 const LessonView: React.FC<LessonViewProps> = ({ lesson, onComplete, onBack }: LessonViewProps) => {
   const [isCompleted, setIsCompleted] = useState(false);
   const navigate = useNavigate();
+  const [eInputs, setEInputs] = useState<string[]>([]);
+  const [eChecked, setEChecked] = useState(false);
+  const [eCorrectness, setECorrectness] = useState<boolean[]>([]);
 
   // Simple markdown-like rendering for the content
   const renderContent = (content: string) => {
@@ -162,7 +165,7 @@ const LessonView: React.FC<LessonViewProps> = ({ lesson, onComplete, onBack }: L
                   ];
                 })()}
               </ul>
-            </div>
+            </div> 
 
             {/* Action Buttons */}
             <div className="flex justify-between items-center pt-6 border-t border-gray-200">
